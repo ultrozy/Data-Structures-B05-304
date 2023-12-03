@@ -4,13 +4,8 @@
 #include <algorithm>
 #include <cstddef>
 
-// #define NODE_HAS_PARENT
-
 template <class T>
 struct NodeAVL {
-#ifdef NODE_HAS_PARENT
-  NodeAVL<T>* parent;
-#endif
   NodeAVL<T>* left;
   NodeAVL<T>* right;
   size_t height;
@@ -23,19 +18,28 @@ class AVLtree {
   NodeAVL<T>* p_root_ = nullptr;
 
  public:
-  AVLtree() : p_root_(nullptr) {}
-  AVLtree(const T* sorted_array, size_t size)
-      : p_root_{BuildAVL(sorted_array, sorted_array + size)} {}
-  AVLtree(const std::initializer_list<T>& list)
-      : p_root_{BuildAVL(list.begin(), list.end())} {}
-  ~AVLtree() { HelperClear(p_root_); }
+  AVLtree() : p_root_(nullptr) {
+  }
+  AVLtree(const T* sorted_array, size_t size) : p_root_{BuildAVL(sorted_array, sorted_array + size)} {
+  }
+  AVLtree(const std::initializer_list<T>& list) : p_root_{BuildAVL(list.begin(), list.end())} {
+  }
+  ~AVLtree() {
+    HelperClear(p_root_);
+  }
 
-  void Insert(const T& value) { p_root_ = HelperInsert(p_root_, value); }
-  void Delete(const T& value) { p_root_ = HelperDelete(p_root_, value); }
+  void Insert(const T& value) {
+    p_root_ = HelperInsert(p_root_, value);
+  }
+  void Delete(const T& value) {
+    p_root_ = HelperDelete(p_root_, value);
+  }
   T* InorderTraversal(T* sequence) const {
     return HelperInOrderTraversal(p_root_, sequence);
   }
-  void Clear() { HelperClear(p_root_); }
+  void Clear() {
+    HelperClear(p_root_);
+  }
 
  private:
   static NodeAVL<T>* HelperInsert(NodeAVL<T>* p_node, const T& value) {
@@ -145,8 +149,7 @@ class AVLtree {
       return nullptr;
     }
     auto mid = begin + ((end - begin) / 2);
-    auto p_node =
-        new NodeAVL<T>{BuildAVL(begin, mid), BuildAVL(mid + 1, end), 1, *mid};
+    auto p_node = new NodeAVL<T>{BuildAVL(begin, mid), BuildAVL(mid + 1, end), 1, *mid};
     if (p_node->left) {
       p_node->height = 1 + p_node->left->height;
     }
@@ -170,6 +173,7 @@ class AVLtree {
     return Height(p_node->right) - Height(p_node->left);
   }
   static NodeAVL<T>* LocalBalance(NodeAVL<T>* p_node) {
+    SetHeight(p_node);
     if (BalanceFactor(p_node) == 2) {
       if (BalanceFactor(p_node->right) == -1) {
         return RotateBigLeft(p_node);

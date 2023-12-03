@@ -18,12 +18,15 @@ class SplayTree {
   NodeSplay<T>* p_root_ = nullptr;
 
  public:
-  SplayTree() : p_root_(nullptr) {}
-  SplayTree(const T* sorted_array, size_t size)
-      : p_root_{BuildSplay(sorted_array, sorted_array + size)} {}
-  SplayTree(const std::initializer_list<T>& list)
-      : p_root_{BuildSplay(list.begin(), list.end())} {}
-  ~SplayTree() { Clear(); }
+  SplayTree() : p_root_(nullptr) {
+  }
+  SplayTree(const T* sorted_array, size_t size) : p_root_{BuildSplay(sorted_array, sorted_array + size)} {
+  }
+  SplayTree(const std::initializer_list<T>& list) : p_root_{BuildSplay(list.begin(), list.end())} {
+  }
+  ~SplayTree() {
+    Clear();
+  }
 
   void Insert(const T& value) {
     if (!p_root_) {
@@ -148,8 +151,7 @@ class SplayTree {
       return nullptr;
     }
     auto mid = begin + ((end - begin) / 2);
-    auto p_node = new NodeSplay<T>{nullptr, BuildSplay(begin, mid),
-                                   BuildSplay(mid + 1, end), *mid};
+    auto p_node = new NodeSplay<T>{nullptr, BuildSplay(begin, mid), BuildSplay(mid + 1, end), *mid};
     if (p_node->left) {
       p_node->left->parent = p_node;
     }

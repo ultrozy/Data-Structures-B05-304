@@ -29,8 +29,7 @@ class BinarySearchTree {
       return nullptr;
     }
     auto mid = begin + ((end - begin) / 2);
-    auto pnode = new NodeBST<T>{nullptr, BuildBST(begin, mid),
-                                BuildBST(mid + 1, end), *mid};
+    auto pnode = new NodeBST<T>{nullptr, BuildBST(begin, mid), BuildBST(mid + 1, end), *mid};
     if (pnode->left) {
       pnode->left->parent = pnode;
     }
@@ -137,7 +136,9 @@ class BinarySearchTree {
   void InorderTraversal(T* sequence) {
     HelperInOrderTraversal(root_, sequence);
   }
-  void Clear() { HelperClear(root_); }
+  void Clear() {
+    HelperClear(root_);
+  }
 };
 
 #endif

@@ -73,7 +73,7 @@ T PopLast(Deque<T>& deque) {
 
 template <class T>
 void InsertAfter(NodeDeque<T>* p_curr_node, const T& value) {
-  NodeDeque<T>* p_new_node = new NodeDeque<T> {p_curr_node, p_curr_node->next, value};
+  NodeDeque<T>* p_new_node = new NodeDeque<T>{p_curr_node, p_curr_node->next, value};
   p_curr_node->next = p_new_node;
   if (p_new_node->next) {
     p_new_node->next->prev = p_new_node;
