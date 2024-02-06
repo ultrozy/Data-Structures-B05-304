@@ -14,10 +14,8 @@ class String {
   String(const char*);
 
   String(const String&);
-  String& operator=(const String&) noexcept;
+  String& operator=(const String&);
   ~String();
-  String(String&&);
-  String& operator=(String&&) noexcept;
 
   void Print() const;
 };
