@@ -2,6 +2,8 @@
 #define STACK_H_
 
 #include <cstddef>
+#include <utility>
+#include <iostream>
 
 template <class T>
 struct NodeStack {
@@ -10,42 +12,101 @@ struct NodeStack {
 };
 
 template <class T>
-struct Stack {
-  NodeStack<T>* back = nullptr;
-  size_t size = 0;
+class Stack {
+  NodeStack<T>* back_ = nullptr;
+  size_t size_ = 0;
+
+ public:
+  Stack() = default;
+  void PushBack(const T&);
+  T PopBack();
+  T& Back();
+  const T& Back() const;
+  void Clear();
+
+  Stack(const Stack<T>&);
+  Stack<T>& operator=(const Stack<T>&);
+  ~Stack();
+
+  void Print() const;
 };
 
 template <class T>
-void PushBack(Stack<T>& stack, const T& value) {
-  ++stack.size;
-  // В динамической памяти, тк иначе NodeStack уничтожится при выходе из функции
-  NodeStack<T>* p_node = new NodeStack<T>{stack.back, value};
-  stack.back = p_node;
+void Stack<T>::PushBack(const T& value) {
+  ++size_;
+  back_ = new NodeStack<T>{back_, value};
 }
 
 template <class T>
-T PopBack(Stack<T>& stack) {
-  --stack.size;
-  NodeStack<T>* p_node = stack.back;
-  stack.back = p_node->next;
-  T value = p_node->value;
-  delete p_node;
+T Stack<T>::PopBack() {
+  --size_;
+  T value = back_->value;
+  delete std::exchange(back_, back_->next);
   return value;
 }
 
 template <class T>
-T Back(const Stack<T>& stack) {
-  return stack.back->value;
+T& Stack<T>::Back() {
+  return back_->value;
 }
 
 template <class T>
-void Clear(Stack<T>& stack) {
-  stack.size = 0;
-  while (stack.back) {
-    NodeStack<T>* p_node = stack.back;
-    stack.back = p_node->next;
-    delete p_node;
+const T& Stack<T>::Back() const {
+  return back_->value;
+}
+
+template <class T>
+void Stack<T>::Clear() {
+  size_ = 0;
+  while (back_) {
+    delete std::exchange(back_, back_->next);
   }
+}
+
+template <class T>
+Stack<T>::Stack(const Stack<T>& other) : back_{nullptr}, size_{other.size_} {
+  if (!other.back_) {
+    return;
+  }
+  NodeStack<T>* p_node = back_ = new NodeStack<T>{nullptr, other.back_->value};
+  NodeStack<T>* p_other_node = other.back_;
+  while (p_other_node->next) {
+    p_other_node = p_other_node->next;
+    p_node = p_node->next = new NodeStack<T>{nullptr, p_other_node->value};
+  }
+}
+
+template <class T>
+Stack<T>& Stack<T>::operator=(const Stack<T>& other) {
+  if (this == &other) {
+    return *this;
+  }
+  Clear();
+  if (!other.back_) {
+    return *this;
+  }
+  NodeStack<T>* p_node = back_ = new NodeStack<T>{nullptr, other.back_->value};
+  NodeStack<T>* p_other_node = other.back_;
+  while (p_other_node->next) {
+    p_other_node = p_other_node->next;
+    p_node = p_node->next = new NodeStack<T>{nullptr, p_other_node->value};
+  }
+  return *this;
+}
+
+template <class T>
+Stack<T>::~Stack() {
+  Clear();
+}
+
+template <class T>
+void Stack<T>::Print() const {
+  std::cout << "-> ";
+  auto p_node = back_;
+  while (p_node) {
+    std::cout << std::exchange(p_node, p_node->next)->value << ' ';
+  }
+  std::cout << '\n';
 }
 
 #endif
