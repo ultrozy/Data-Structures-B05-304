@@ -24,11 +24,16 @@ class Stack {
   const T& Back() const;
   void Clear();
 
+  ~Stack();
   Stack(const Stack<T>&);
   Stack<T>& operator=(const Stack<T>&);
-  ~Stack();
+  Stack(Stack<T>&&) noexcept;
+  Stack<T>& operator=(Stack<T>&&) noexcept;
 
   void Print() const;
+
+  template <class U>
+  friend void Swap(Stack<U>&, Stack<U>&);
 };
 
 template <class T>
@@ -63,6 +68,21 @@ void Stack<T>::Clear() {
   }
 }
 
+template <class U>
+void Swap(Stack<U>& fst, Stack<U>& snd) {
+  std::swap(fst.back_, snd.back_);
+  std::swap(fst.size_, snd.size_);
+}
+
+/* Правило пяти */
+
+// Деструктор
+template <class T>
+Stack<T>::~Stack() {
+  Clear();
+}
+
+// Конструктор копирования
 template <class T>
 Stack<T>::Stack(const Stack<T>& other) : back_{nullptr}, size_{other.size_} {
   if (!other.back_) {
@@ -76,6 +96,7 @@ Stack<T>::Stack(const Stack<T>& other) : back_{nullptr}, size_{other.size_} {
   }
 }
 
+// Оператор присваивания копированием
 template <class T>
 Stack<T>& Stack<T>::operator=(const Stack<T>& other) {
   if (this == &other) {
@@ -94,10 +115,38 @@ Stack<T>& Stack<T>::operator=(const Stack<T>& other) {
   return *this;
 }
 
+// Конструктор перемещения
 template <class T>
-Stack<T>::~Stack() {
-  Clear();
+Stack<T>::Stack(Stack<T>&& other) noexcept
+    : back_{std::exchange(other.back_, nullptr)}  //
+    , size_{std::exchange(other.size_, 0)} {
 }
+
+// Оператор присваивания перемещением
+template <class T>
+Stack<T>& Stack<T>::operator=(Stack<T>&& other) noexcept {
+  if (this == &other) {
+    return *this;
+  }
+  Clear();
+  back_ = std::exchange(other.back_, nullptr);
+  size_ = std::exchange(other.size_, 0);
+  return *this;
+}
+
+// Move and Swap Idiom
+// template <class T>
+// Stack<T>::Stack(Stack<T>&& other) noexcept {
+//   Swap(*this, other);
+// }
+
+// template <class T>
+// Stack<T>& Stack<T>::operator=(Stack<T>&& other) noexcept {
+//   Stack<T> temp(std::move(other));
+//   Swap(*this, temp);
+// }
+
+/* Правило пяти*/
 
 template <class T>
 void Stack<T>::Print() const {
