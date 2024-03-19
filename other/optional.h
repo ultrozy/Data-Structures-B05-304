@@ -27,9 +27,9 @@ class Optional {
   void Reset();
 
   Optional(const Optional<T>&);
-  Optional(Optional<T>&&);
+  Optional(Optional<T>&&) noexcept;
   Optional<T>& operator=(const Optional<T>&);
-  Optional<T>& operator=(Optional<T>&&);
+  Optional<T>& operator=(Optional<T>&&) noexcept;
   ~Optional();
 };
 
@@ -105,7 +105,7 @@ Optional<T>::Optional(const Optional<T>& other) : has_value_{other.has_value_} {
 }
 
 template <class T>
-Optional<T>::Optional(Optional<T>&& other) : has_value_{other.has_value_} {
+Optional<T>::Optional(Optional<T>&& other) noexcept : has_value_{other.has_value_} {
   if (has_value_) {
     new (memory_) T(std::move(*other));
   }
@@ -121,7 +121,7 @@ Optional<T>& Optional<T>::operator=(const Optional<T>& other) {
 }
 
 template <class T>
-Optional<T>& Optional<T>::operator=(Optional<T>&& other) {
+Optional<T>& Optional<T>::operator=(Optional<T>&& other) noexcept {
   Reset();
   has_value_ = other.has_value_;
   if (has_value_) {
