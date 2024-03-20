@@ -8,7 +8,7 @@ class BadOptionalAccess : std::exception {};
 template <class T>
 class Optional {
   bool has_value_;
-  std::byte memory_[sizeof(T)];
+  alignas(alignof(T)) std::byte memory_[sizeof(T)];
 
  public:
   Optional();
@@ -24,6 +24,7 @@ class Optional {
   T& Value();
   const T& Value() const;
 
+  bool HasValue() const;
   void Reset();
 
   Optional(const Optional<T>&);
@@ -90,6 +91,11 @@ const T& Optional<T>::Value() const {
 }
 
 template <class T>
+bool Optional<T>::HasValue() const {
+  return has_value_;
+}
+
+template <class T>
 void Optional<T>::Reset() {
   if (has_value_) {
     operator*().~T();
@@ -113,20 +119,28 @@ Optional<T>::Optional(Optional<T>&& other) noexcept : has_value_{other.has_value
 
 template <class T>
 Optional<T>& Optional<T>::operator=(const Optional<T>& other) {
+  if (this == &other) {
+    return *this;
+  }
   Reset();
   has_value_ = other.has_value_;
   if (has_value_) {
     new (memory_) T(*other);
   }
+  return *this;
 }
 
 template <class T>
 Optional<T>& Optional<T>::operator=(Optional<T>&& other) noexcept {
+  if (this == &other) {
+    return *this;
+  }
   Reset();
   has_value_ = other.has_value_;
   if (has_value_) {
     new (memory_) T(std::move(*other));
   }
+  return *this;
 }
 
 template <class T>
