@@ -1,6 +1,8 @@
 #ifndef DEQUE_H_
 #define DEQUE_H_
 
+#include <iterator>
+#include <type_traits>
 #include <cstddef>
 
 template <class T>
@@ -11,10 +13,108 @@ struct NodeDeque {
 };
 
 template <class T>
-struct Deque {
-  NodeDeque<T>* first = nullptr;
+class IteratorDeque {
+ private:
+  NodeDeque<T>* ptr_;
+
+ public:
+  using iterator_category = std::bidirectional_iterator_tag;
+  using value_type = std::remove_cv_t<std::remove_reference_t<T>>;
+  using difference_type = std::ptrdiff_t;
+  using reference_type = T&;
+  using pointer_type = T*;
+
+  IteratorDeque(NodeDeque<T>*);
+
+  bool operator==(IteratorDeque);
+  bool operator!=(IteratorDeque);
+  reference_type operator*();
+  pointer_type operator->();
+  IteratorDeque& operator++();
+  IteratorDeque operator++(int);
+  IteratorDeque& operator--();
+  IteratorDeque operator--(int);
+};
+
+template <class T>
+IteratorDeque<T>::IteratorDeque(NodeDeque<T>* ptr) : ptr_{ptr} {
+}
+
+template <class T>
+bool IteratorDeque<T>::operator==(IteratorDeque other) {
+  return ptr_ == other.ptr_;
+}
+
+template <class T>
+bool IteratorDeque<T>::operator!=(IteratorDeque other) {
+  return ptr_ != other.ptr_;
+}
+
+template <class T>
+IteratorDeque<T>::reference_type IteratorDeque<T>::operator*() {
+  return ptr_->value;
+}
+
+template <class T>
+IteratorDeque<T>::pointer_type IteratorDeque<T>::operator->() {
+  return &ptr_->value;
+}
+
+template <class T>
+IteratorDeque<T>& IteratorDeque<T>::operator++() {
+  ptr_ = ptr_->next;
+  return *this;
+}
+
+template <class T>
+IteratorDeque<T> IteratorDeque<T>::operator++(int) {
+  IteratorDeque<T> old(ptr_);
+  ptr_ = ptr_->next;
+  return old;
+}
+
+template <class T>
+IteratorDeque<T>& IteratorDeque<T>::operator--() {
+  ptr_ = ptr_->prev;
+  return *this;
+}
+
+template <class T>
+IteratorDeque<T> IteratorDeque<T>::operator--(int) {
+  IteratorDeque<T> old(ptr_);
+  ptr_ = ptr_->prev;
+  return old;
+}
+
+//////////////////////
+// CLASS DEFINITION //
+//////////////////////
+
+template <class T>
+class Deque {
+ private:
   NodeDeque<T>* last = nullptr;
+  NodeDeque<T>* first = nullptr;
   size_t size = 0;
+
+ public:
+  using Iterator = IteratorDeque<T>;
+  using ConstIterator = IteratorDeque<const T>;
+  using ReverseIterator = std::reverse_iterator<Iterator>;
+  using ConstReverseIterator = std::reverse_iterator<ConstIterator>;
+
+  Iterator begin();
+  Iterator end();
+  ConstIterator begin() const;
+  ConstIterator end() const;
+  ConstIterator cbegin() const;
+  ConstIterator cend() const;
+  ReverseIterator rbegin();
+  ReverseIterator rend();
+  ConstReverseIterator rbegin() const;
+  ConstReverseIterator rend() const;
+  ConstReverseIterator crbegin() const;
+  ConstReverseIterator crend() const;
 };
 
 template <class T>
@@ -71,20 +171,5 @@ T PopLast(Deque<T>& deque) {
   return value;
 }
 
-template <class T>
-void InsertAfter(NodeDeque<T>* p_curr_node, const T& value) {
-  NodeDeque<T>* p_new_node = new NodeDeque<T>{p_curr_node, p_curr_node->next, value};
-  p_curr_node->next = p_new_node;
-  if (p_new_node->next) {
-    p_new_node->next->prev = p_new_node;
-  }
-}
-
-template <class T>
-void Remove(NodeDeque<T>* p_curr_node) {
-  p_curr_node->next->prev = p_curr_node->prev;
-  p_curr_node->prev->next = p_curr_node->next;
-  delete p_curr_node;
-}
-
 #endif
+

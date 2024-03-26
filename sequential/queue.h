@@ -1,20 +1,22 @@
 #ifndef QUEUE_H_
 #define QUEUE_H_
 
+#include <iterator>
 #include <cstddef>
 
 template <class T>
 struct NodeQueue {
   NodeQueue<T>* next = nullptr;
+  NodeQueue<T>* prev = nullptr;
   T value;
 };
 
 template <class T>
 class Queue {
  private:
+  size_t size = 0;
   NodeQueue<T>* front = nullptr;
   NodeQueue<T>* back = nullptr;
-  size_t size = 0;
   mutable int num_operations = 0;
 
  public:
