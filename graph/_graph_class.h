@@ -21,7 +21,7 @@ class Graph {
   Graph<dir, Wei>& operator=(const Graph<dir, Wei>&) = default;
   Graph<dir, Wei>& operator=(Graph<dir, Wei>&&) noexcept = default;
   ~Graph() = default;
-  
+
   Graph(size_t);
   Graph(std::initializer_list<Edge<Wei>>);
   size_t Size() const;
@@ -71,6 +71,11 @@ class Graph {
   void RecursiveAP(std::optional<Vertex>, Vertex, DFStimes&, std::vector<Color>&, std::vector<Vertex>&, size_t&) const;
   void RecursiveBridges(std::optional<Vertex>, Vertex, DFStimes&, std::vector<Color>&, std::unordered_set<Edge<Wei>>&,
                         size_t&) const;
+
+  // MST
+ public:
+  template <bool directed = dir, class Weight = Wei, EnifUndirected<dir, directed> = 0, EnifWeighted<Wei, Weight> = 0>
+  std::vector<Edge<Weight>> Prim() const;
 };
 
 ///////////////////

@@ -7,6 +7,7 @@
 #include "./graph_dfs.h"
 #include "./graph_euler.h"
 #include "./graph_ap_bridge.h"
+#include "./graph_mst.h"
 
 template <class Weight = void>
 using UndirectedGraph = Graph<false, Weight>;
