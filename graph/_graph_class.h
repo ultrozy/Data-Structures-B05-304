@@ -76,6 +76,17 @@ class Graph {
  public:
   template <bool directed = dir, class Weight = Wei, EnifUndirected<dir, directed> = 0, EnifWeighted<Wei, Weight> = 0>
   std::vector<Edge<Weight>> Prim() const;
+  template <bool directed = dir, class Weight = Wei, EnifUndirected<dir, directed> = 0, EnifWeighted<Wei, Weight> = 0>
+  std::vector<Edge<Weight>> Kruskal() const;
+  template <bool directed = dir, class Weight = Wei, EnifUndirected<dir, directed> = 0, EnifWeighted<Wei, Weight> = 0>
+  std::vector<Edge<Weight>> Boruvka() const;
+
+  // Distance
+ public:
+  template <class Weight = Wei, EnifWeighted<Wei, Weight> = 0>
+  std::vector<std::optional<Weight>> Dijkstra(Vertex) const;
+  template <class Weight = Wei, EnifWeighted<Wei, Weight> = 0>
+  std::vector<std::optional<Weight>> BellmanFord(Vertex) const;
 };
 
 ///////////////////

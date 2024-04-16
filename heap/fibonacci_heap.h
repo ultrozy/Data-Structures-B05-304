@@ -338,6 +338,9 @@ FibonacciHeap<T>& FibonacciHeap<T>::operator=(FibonacciHeap<T>&& other) noexcept
 }
 template <class T>
 FibonacciHeap<T>::~FibonacciHeap() {
+  if (!root_) {
+    return;
+  }
   while (root_->child) {
     root_ = root_->child;
   }
