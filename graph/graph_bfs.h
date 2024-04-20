@@ -63,10 +63,8 @@ template <bool dir, class Wei>
 template <class Weight, EnifWeighted<Wei, Weight>>
 std::vector<size_t> Graph<dir, Wei>::BFS_0k(Vertex vertex, size_t k) const {
   std::vector<size_t> dist(adj_list_.size(), static_cast<size_t>(-1));
-  std::vector<bool> obrabatyvalas(adj_list_.size(), false);
 
   dist[vertex] = 0;
-  obrabatyvalas[vertex] = true;
   size_t num_on_que = 1;
   size_t qind = 0;
 
@@ -79,14 +77,16 @@ std::vector<size_t> Graph<dir, Wei>::BFS_0k(Vertex vertex, size_t k) const {
     }
     Vertex curr = ques[qind].front();
     ques[qind].pop_front();
+    --num_on_que;
     for (auto edge : adj_list_[curr]) {
-      if (!obrabatyvalas[edge.dst]) {
-        ques[(qind + edge.weight) % (k + 1)].emplace_back();
+      Vertex vertex = edge.dst;
+      size_t weight = edge.weight;
+      if (dist[vertex] < dist[curr] + weight) {
+        continue;
       }
-      if (dist[edge.dst] > dist[curr] + edge.weight) {
-        dist[edge.dst] = dist[curr] + edge.weight;
-      }
-      obrabatyvalas[edge.dst] = true;
+      ques[(qind + weight) % (k + 1)].emplace_back(vertex);
+      ++num_on_que;
+      dist[vertex] = dist[curr] + weight;
     }
   }
   return dist;
