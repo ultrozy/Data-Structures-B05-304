@@ -77,7 +77,7 @@ std::pair<bool, std::vector<Vertex>> Graph<dir, Wei>::TopSort(bool do_reverse) c
   if (do_reverse) {
     return {acyclic, {reverse_order.rbegin(), reverse_order.rend()}};
   } else {
-    return {acyclic, reverse_order};
+    return {acyclic, std::move(reverse_order)};
   }
 }
 

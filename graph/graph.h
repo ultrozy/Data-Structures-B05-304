@@ -9,6 +9,7 @@
 #include "./graph_ap_bridge.h"
 #include "./graph_mst.h"
 #include "./graph_distance.h"
+#include "./graph_flows.h"
 
 template <class Weight = void>
 using UndirectedGraph = Graph<false, Weight>;

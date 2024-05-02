@@ -52,8 +52,8 @@ struct std::hash<Edge<Weight>> {
     size_t h_src = std::hash<Vertex>{}(edge.src);
     size_t h_dst = std::hash<Vertex>{}(edge.dst);
     size_t h_weight = std::hash<Weight>{}(edge.weight);
-    h_src ^= ((h_dst << (4 * sizeof(size_t))) | (h_dst >> (4 * sizeof(size_t))));
-    return h_weight ^ ((h_src << (4 * sizeof(size_t))) | (h_src >> (4 * sizeof(size_t))));
+    h_src ^= ((h_dst << 47) | (h_dst >> 21));
+    return h_weight ^ ((h_src << 47) | (h_src >> 21));
   }
 };
 template <>
