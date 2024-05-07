@@ -93,16 +93,16 @@ class Graph {
   std::optional<std::vector<std::vector<Weight>>> Johnson() const;
 
   // Flows
-  template <bool directed = dir, class Weight = Wei, EnifUndirected<dir, directed> = 0, EnifWeighted<Wei, Weight> = 0>
+  template <bool directed = dir, class Weight = Wei, EnifWeighted<Wei, Weight> = 0>
   Weight FordFulkerson(Vertex, Vertex) const;
-  template <bool directed = dir, class Weight = Wei, EnifUndirected<dir, directed> = 0, EnifWeighted<Wei, Weight> = 0>
+  template <bool directed = dir, class Weight = Wei, EnifWeighted<Wei, Weight> = 0>
   Weight EdmondsKarp(Vertex, Vertex) const;
-  template <bool directed = dir, class Weight = Wei, EnifUndirected<dir, directed> = 0, EnifWeighted<Wei, Weight> = 0>
+  template <bool directed = dir, class Weight = Wei, EnifWeighted<Wei, Weight> = 0>
   Weight Dinic(Vertex, Vertex) const;
 
  private:
-  bool RecursiveDFSFordFulkerson(Edge<Wei>, Vertex, std::unordered_map<Edge<Wei>, Wei>&, std::vector<Edge<Wei>>&,
-                                 std::vector<bool>&) const;
+  bool RecursiveDFSFordFulkerson(Vertex, Vertex, std::vector<std::unordered_map<Vertex, std::pair<Wei, Wei>>>&,
+                                 std::vector<Vertex>&, std::vector<bool>&) const;
 };
 
 ///////////////////
