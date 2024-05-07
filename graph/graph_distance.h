@@ -88,7 +88,7 @@ template <bool dir, class Wei>
 template <class Weight, EnifWeighted<Wei, Weight>>
 std::pair<bool, std::vector<Weight>> Graph<dir, Wei>::BellmanFord(Vertex start) const {
   constexpr Weight plus_inf = std::numeric_limits<Weight>::max();
-  constexpr Weight minus_inf = std::numeric_limits<Weight>::lowest();
+  // constexpr Weight minus_inf = std::numeric_limits<Weight>::lowest();
 
   // Dist initialization
   std::vector<Weight> dist;
@@ -114,37 +114,38 @@ std::pair<bool, std::vector<Weight>> Graph<dir, Wei>::BellmanFord(Vertex start) 
     }
   }
 
-  // Detect negative vertices
-  std::vector<Vertex> negative_vertices;
-  for (Vertex vertex = 0; vertex < adj_list_.size(); ++vertex) {
-    if (dist[vertex] == plus_inf) {
-      continue;
-    }
-    for (const auto& edge : adj_list_[vertex]) {
-      Weight new_dist = dist[vertex] + edge.weight;
-      if (dist[edge.dst] > new_dist) {
-        negative_vertices.emplace_back(edge.dst);
-      }
-    }
-  }
+  // // Detect negative vertices
+  // std::vector<Vertex> negative_vertices;
+  // for (Vertex vertex = 0; vertex < adj_list_.size(); ++vertex) {
+  //   if (dist[vertex] == plus_inf) {
+  //     continue;
+  //   }
+  //   for (const auto& edge : adj_list_[vertex]) {
+  //     Weight new_dist = dist[vertex] + edge.weight;
+  //     if (dist[edge.dst] > new_dist) {
+  //       negative_vertices.emplace_back(edge.dst);
+  //     }
+  //   }
+  // }
 
-  // Assign -inf
-  std::vector<Vertex> stack;
-  for (Vertex neg_start : negative_vertices) {
-    stack.emplace_back(neg_start);
-    dist[neg_start] = minus_inf;
-    while (!stack.empty()) {
-      Vertex vertex = stack.back();
-      stack.pop_back();
-      for (const auto& edge : adj_list_[vertex]) {
-        if (dist[edge.dst] != minus_inf) {
-          stack.emplace_back(edge.dst);
-          dist[edge.dst] = minus_inf;
-        }
-      }
-    }
-  }
-  return {negative_vertices.empty(), std::move(dist)};
+  // // Assign -inf
+  // std::vector<Vertex> stack;
+  // for (Vertex neg_start : negative_vertices) {
+  //   stack.emplace_back(neg_start);
+  //   dist[neg_start] = minus_inf;
+  //   while (!stack.empty()) {
+  //     Vertex vertex = stack.back();
+  //     stack.pop_back();
+  //     for (const auto& edge : adj_list_[vertex]) {
+  //       if (dist[edge.dst] != minus_inf) {
+  //         stack.emplace_back(edge.dst);
+  //         dist[edge.dst] = minus_inf;
+  //       }
+  //     }
+  //   }
+  // }
+  // return {negative_vertices.empty(), std::move(dist)};
+  return {true, std::move(dist)};
 }
 
 template <bool dir, class Wei>
@@ -153,7 +154,28 @@ std::optional<std::vector<std::vector<Weight>>> Graph<dir, Wei>::FloydWarshall()
 }
 template <bool dir, class Wei>
 template <class Weight, EnifWeighted<Wei, Weight>>
-std::optional<std::vector<std::vector<Weight>>> Graph<dir, Wei>::Johnson() const {
+std::optional<std::vector<std::vector<std::optional<Weight>>>> Graph<dir, Wei>::Johnson() const {
+  auto [no_neg_cycle, potential] = BellmanFord(adj_list_.size());
+  if (!no_neg_cycle) {
+    return {};
+  }
+  Graph<dir, Wei> new_g(adj_list_.size());
+  for (Vertex vertex = 0; vertex < adj_list_.size(); ++vertex) {
+    for (const auto& edge : adj_list_[vertex]) {
+      if constexpr (dir) {
+        new_g.AddEdge(vertex, edge.dst, edge.weight + potential[edge.dst] - potential[vertex]);
+      } else {
+        if (vertex < edge.dst) {
+          new_g.AddEdge(vertex, edge.dst, edge.weight + potential[edge.dst] - potential[vertex]);
+        }
+      }
+    }
+  }
+  std::vector<std::vector<std::optional<Weight>>> answer;
+  for (Vertex vertex = 0; vertex < adj_list_.size(); ++vertex) {
+    answer.emplace_back(new_g.Dijkstra(vertex));
+  }
+  return answer;
 }
 
 #endif

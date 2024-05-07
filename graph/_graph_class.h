@@ -90,7 +90,7 @@ class Graph {
   template <class Weight = Wei, EnifWeighted<Wei, Weight> = 0>
   std::optional<std::vector<std::vector<Weight>>> FloydWarshall() const;
   template <class Weight = Wei, EnifWeighted<Wei, Weight> = 0>
-  std::optional<std::vector<std::vector<Weight>>> Johnson() const;
+  std::optional<std::vector<std::vector<std::optional<Weight>>>> Johnson() const;
 
   // Flows
   template <bool directed = dir, class Weight = Wei, EnifWeighted<Wei, Weight> = 0>
